@@ -380,7 +380,7 @@ label.chk input[type=date]{width:auto;height:auto;padding:6px 8px;accent-color:a
         <h2 class="sec-title">Usuarios y permisos</h2>
         <p>Cada persona entra con su nombre y su clave. Los permisos los controla Firebase, no solo la pantalla.</p>
         <div id="usuariosInfo"></div>
-        <p class="muted" style="font-size:12.5px">Para cambiar una clave: consola de Firebase → Authentication → Usuarios → ⋮ → Restablecer contraseña. La contraseña es <b>sst-</b> seguida de la clave (por ejemplo sst-4821).</p>
+        <p class="muted" style="font-size:12.5px">Para cambiar una clave: consola de Firebase → Authentication → Usuarios → ⋮ → Restablecer contraseña. La contraseña es la misma clave de 6 dígitos con la que entra la persona.</p>
       </div>
       <div class="panel edit-only">
         <h2 class="sec-title">Pasar datos de la versión anterior</h2>
@@ -435,7 +435,7 @@ label.chk input[type=date]{width:auto;height:auto;padding:6px 8px;accent-color:a
     <h1>Control de exámenes médicos</h1>
     <p id="lSub">Elige tu nombre y escribe tu clave.</p>
     <div class="lnames" id="lNames" role="radiogroup" aria-label="Usuario"></div>
-    <input class="lpin" id="lPin" type="password" inputmode="numeric" maxlength="8" placeholder="••••" aria-label="Clave" autocomplete="current-password">
+    <input class="lpin" id="lPin" type="password" inputmode="numeric" maxlength="8" placeholder="••••••" aria-label="Clave" autocomplete="current-password">
     <button class="primary" id="lBtn" type="submit">Entrar</button>
     <div class="lerr" id="lErr" role="alert"></div>
     <div class="lfoot">La sesión se cierra al cerrar el navegador o tras 30 minutos sin uso.</div>
@@ -946,7 +946,7 @@ const USUARIOS=[
   {nombre:'Erika',email:'erika@control-examenes.app',rol:'editor'},
   {nombre:'Consulta',email:'consulta@control-examenes.app',rol:'lector'},
 ];
-const PREFIJO='sst-';
+const PREFIJO='';
 let auth=null,fs=null,usuario=null,rol=null,unsubs=[],bitacora=[],cargado={ex:false,per:false,cfg:false};
 const RO=()=>rol!=='editor';
 const limpio=o=>JSON.parse(JSON.stringify(o,(k,v)=>v===undefined?null:v));
@@ -1686,7 +1686,7 @@ function mostrarLogin(msg){
 $('#lForm').onsubmit=async e=>{e.preventDefault();
   if(!auth){$('#lErr').textContent='La herramienta aún no está conectada a Firebase.';return;}
   if(!lSel){$('#lErr').textContent='Elige tu nombre.';return;}
-  const pin=$('#lPin').value.trim();if(!/^\d{4,8}$/.test(pin)){$('#lErr').textContent='La clave debe tener entre 4 y 8 dígitos.';return;}
+  const pin=$('#lPin').value.trim();if(!/^\d{6,10}$/.test(pin)){$('#lErr').textContent='La clave debe tener 6 dígitos.';return;}
   $('#lBtn').disabled=true;$('#lErr').textContent='';
   try{await auth.signInWithEmailAndPassword(lSel.email,PREFIJO+pin);}
   catch(err){const c=err.code||'';$('#lErr').textContent=/too-many/.test(c)?'Demasiados intentos fallidos. Espera unos minutos.':/network/.test(c)?'Sin conexión a internet.':'Clave incorrecta.';$('#lPin').value='';}
